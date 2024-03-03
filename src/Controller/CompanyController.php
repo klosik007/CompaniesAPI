@@ -45,4 +45,36 @@ class CompanyController extends AbstractController
 
         return new Response('Added new company with id: '.$company->getId());
     }
+
+    #[Route('/company/{id}', name: 'update_company', methods: ['PATCH'])]
+    public function updateCompany(EntityManagerInterface $entityManager, Request $request, int $id): Response
+    {
+        $companyData = $entityManager->getRepository(Company::class)->find($id);
+        if (!$companyData)
+        {
+            return new Response('Company data not found', 404);
+        }
+
+        $companyUpdatedData = json_decode($request->getContent(), true);
+
+        if (isset($companyUpdatedData['name'])) {
+            $companyData->setName($companyUpdatedData['name']);
+        }
+
+        if (isset($companyUpdatedData['address'])) {
+            $companyData->setAddress($companyUpdatedData['address']);
+        }
+
+        if (isset($companyUpdatedData['nip'])) {
+            $companyData->setNIP($companyUpdatedData['nip']);
+        }
+
+        if (isset($companyUpdatedData['postal'])) {
+            $companyData->setPostal($companyUpdatedData['postal']);
+        }
+
+        $entityManager->flush();
+
+        return new Response('Updated company with id: '.$id);
+    }
 }
