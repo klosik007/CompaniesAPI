@@ -77,4 +77,19 @@ class CompanyController extends AbstractController
 
         return new Response('Updated company with id: '.$id);
     }
+
+    #[Route('/company/{id}', name: 'delete_company', methods: ['DELETE'])]
+    public function deleteCompany(EntityManagerInterface $entityManager, int $id): Response
+    {
+        $companyData = $entityManager->getRepository(Company::class)->find($id);
+        if (!$companyData)
+        {
+            return new Response('Company data not found', 404);
+        }
+
+        $entityManager->remove($companyData);
+        $entityManager->flush();
+
+        return new Response('Deleted company with id: '.$id);
+    }
 }
