@@ -100,5 +100,18 @@ class EmployeeController extends AbstractController
         return new Response('Updated employee with id: '.$id);
     }
 
+    #[Route('/employee/{id}', name: 'delete_employee', methods: ['DELETE'])]
+    public function deleteEmployee(EntityManagerInterface $entityManager, int $id): Response
+    {
+        $employeeData = $entityManager->getRepository(Employee::class)->find($id);
+        if (!$employeeData)
+        {
+            return new Response('Employee data not found', 404);
+        }
 
+        $entityManager->remove($employeeData);
+        $entityManager->flush();
+
+        return new Response('Deleted employee with id: '.$id);
+    }
 }
