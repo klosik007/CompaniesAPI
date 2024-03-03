@@ -55,4 +55,50 @@ class EmployeeController extends AbstractController
 
         return new Response('Added new employee with id: '.$employee->getId());
     }
+
+    #[Route('/employee/{id}', name: 'update_employee', methods: ['PATCH'])]
+    public function updateEmployee(EntityManagerInterface $entityManager, CompanyRepository $companyRepository, Request $request, int $id): Response
+    {
+        $employeeData = $entityManager->getRepository(Employee::class)->find($id);
+        if (!$employeeData)
+        {
+            return new Response('Employee data not found', 404);
+        }
+
+        $employeeUpdatedData = json_decode($request->getContent(), true);
+
+        if (isset($employeeUpdatedData['name'])) {
+            $employeeData->setName($employeeUpdatedData['name']);
+        }
+
+        if (isset($employeeUpdatedData['surname'])) {
+            $employeeData->setSurname($employeeUpdatedData['surname']);
+        }
+
+        if (isset($employeeUpdatedData['email'])) {
+            $employeeData->setEmail($employeeUpdatedData['email']);
+        }
+
+        if (isset($employeeUpdatedData['phone'])) {
+            $employeeData->setPhone($employeeUpdatedData['phone']);
+        }
+
+        if (isset($employeeUpdatedData['company_id'])) {
+            $oldCompany = $employeeData->getCompany()->get(0); // get previously saved Company object
+            $newCompany = $companyRepository->find($employeeUpdatedData['company_id']);
+
+            if (isset($newCompany)) {
+                $employeeData->removeCompany($oldCompany); //old dependency
+                $employeeData->addCompany($newCompany); //new dependency
+            }
+            else
+                return new Response('Cannot find the company with id '.$employeeUpdatedData['company_id'], 404);
+        }
+
+        $entityManager->flush();
+
+        return new Response('Updated employee with id: '.$id);
+    }
+
+
 }
