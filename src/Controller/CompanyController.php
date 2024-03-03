@@ -28,4 +28,21 @@ class CompanyController extends AbstractController
 
         return $this->json($companyData);
     }
+
+    #[Route('/company', name: 'create_company', methods: ['POST'])]
+    public function createCompany(EntityManagerInterface $entityManager, Request $request): Response
+    {
+        $companyData = json_decode($request->getContent(), true);
+
+        $company = new Company();
+        $company->setName($companyData['name']);
+        $company->setAddress($companyData['address']);
+        $company->setNIP($companyData['NIP']);
+        $company->setPostal($companyData['postal']);
+
+        $entityManager->persist($company);
+        $entityManager->flush();
+
+        return new Response('Added new company with id: '.$company->getId());
+    }
 }
