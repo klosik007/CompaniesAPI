@@ -1,6 +1,12 @@
 # CompaniesAPI
+## Setup
+On local environment:
+- fetch repo
+- type composer update and composer install in repo terminal
+- make sure your local instance of database has user root on port 3306 with url 127.0.0.1
+- make database migrations: php bin/console make:migration and php bin/console doctrine:migrations:migrate
+- start tests (on my environment have worked)
 ## Endpoints
-
 Company:
 - GET /company/all - list all companies from database
 - GET /company/{id} - show company details by company id
