@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EmployeeController extends AbstractController
 {
-    #[Route('/employee/all', name: 'get_all_employees_info')]
+    #[Route('/employees', name: 'get_all_employees_info', methods: ['GET'])]
     public function getAllEmployeesInfo(EmployeeRepository $employeeRepository): JsonResponse
     {
         $employeesAllData = $employeeRepository->findAll();
@@ -57,9 +57,12 @@ class EmployeeController extends AbstractController
     }
 
     #[Route('/employee/{id}', name: 'update_employee', methods: ['PATCH'])]
-    public function updateEmployee(EntityManagerInterface $entityManager, CompanyRepository $companyRepository, Request $request, int $id): Response
+    public function updateEmployee(EntityManagerInterface $entityManager,
+                                   CompanyRepository $companyRepository,
+                                   EmployeeRepository $employeeRepository,
+                                   Request $request, int $id): Response
     {
-        $employeeData = $entityManager->getRepository(Employee::class)->find($id);
+        $employeeData = $employeeRepository->find($id);
         if (!$employeeData)
         {
             return new Response('Employee data not found', 404);
@@ -101,9 +104,9 @@ class EmployeeController extends AbstractController
     }
 
     #[Route('/employee/{id}', name: 'delete_employee', methods: ['DELETE'])]
-    public function deleteEmployee(EntityManagerInterface $entityManager, int $id): Response
+    public function deleteEmployee(EntityManagerInterface $entityManager, EmployeeRepository $employeeRepository, int $id): Response
     {
-        $employeeData = $entityManager->getRepository(Employee::class)->find($id);
+        $employeeData = $employeeRepository->find($id);
         if (!$employeeData)
         {
             return new Response('Employee data not found', 404);
