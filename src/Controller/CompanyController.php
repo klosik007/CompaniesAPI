@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class CompanyController extends AbstractController
 {
-    #[Route('/company/all', name: 'get_all_companies_info', methods: ['GET'])]
+    #[Route('/companies', name: 'get_all_companies_info', methods: ['GET'])]
     public function getAllCompaniesInfo(CompanyRepository $companyRepository): JsonResponse
     {
         $allData = $companyRepository->findAll();
@@ -47,9 +47,11 @@ class CompanyController extends AbstractController
     }
 
     #[Route('/company/{id}', name: 'update_company', methods: ['PATCH'])]
-    public function updateCompany(EntityManagerInterface $entityManager, Request $request, int $id): Response
+    public function updateCompany(EntityManagerInterface $entityManager,
+                                  CompanyRepository $companyRepository,
+                                  Request $request, int $id): Response
     {
-        $companyData = $entityManager->getRepository(Company::class)->find($id);
+        $companyData = $companyRepository->find($id);
         if (!$companyData)
         {
             return new Response('Company data not found', 404);
@@ -79,9 +81,10 @@ class CompanyController extends AbstractController
     }
 
     #[Route('/company/{id}', name: 'delete_company', methods: ['DELETE'])]
-    public function deleteCompany(EntityManagerInterface $entityManager, int $id): Response
+    public function deleteCompany(EntityManagerInterface $entityManager,
+                                  CompanyRepository $companyRepository, int $id): Response
     {
-        $companyData = $entityManager->getRepository(Company::class)->find($id);
+        $companyData = $companyRepository->find($id);
         if (!$companyData)
         {
             return new Response('Company data not found', 404);
